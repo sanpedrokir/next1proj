@@ -26,7 +26,7 @@ export default function Home() {
   });
 
   async function fetchIncidents() {
-    const response = await fetch("http://localhost:8080/incidents");
+    const response = await fetch("https://next1proj.up.railway.app/incidents");
     const data = await response.json();
     setIncidents(data || []);
   }
@@ -38,7 +38,7 @@ export default function Home() {
   async function submitIncident(e: React.FormEvent) {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:8080/incidents", {
+    const res = await fetch("https://next1proj.up.railway.app/incidents", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

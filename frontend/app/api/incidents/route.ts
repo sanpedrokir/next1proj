@@ -3,8 +3,9 @@ import { Pool } from "pg";
 import { Resend } from "resend";
 
 function getPool() {
+  const connStr = (process.env.DATABASE_URL || "").replace("&channel_binding=require", "").replace("?channel_binding=require&", "?");
   return new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: connStr,
     ssl: { rejectUnauthorized: false },
   });
 }

@@ -26,9 +26,13 @@ export default function Home() {
   });
 
   async function fetchIncidents() {
-    const response = await fetch("/api/incidents");
-    const data = await response.json();
-    setIncidents(data || []);
+    try {
+      const response = await fetch("/api/incidents");
+      const data = await response.json();
+      setIncidents(Array.isArray(data) ? data : []);
+    } catch {
+      setIncidents([]);
+    }
   }
 
   useEffect(() => {

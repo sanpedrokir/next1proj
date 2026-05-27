@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: next1proj_postgres
+    environment:
+      POSTGRES_USER: next1proj_user
+      POSTGRES_PASSWORD: next1proj_password
+      POSTGRES_DB: next1proj_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - next1proj_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  next1proj_postgres_data:

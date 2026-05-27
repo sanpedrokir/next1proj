@@ -1,33 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import { neon } from "@neondatabase/serverless";
+import postgres from "postgres";
 import { Resend } from "resend";
 
-function getDb() {
+function getSql() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set");
-  return neon(url);
-}
-
-async function ensureTable() {
-  const sql = getDb();
-  await sql`
-    CREATE TABLE IF NOT EXISTS incidents (
-      id SERIAL PRIMARY KEY,
-      reported_by TEXT NOT NULL,
-      incident_title TEXT NOT NULL,
-      incident_detail TEXT NOT NULL,
-      urgent BOOLEAN NOT NULL,
-      status TEXT NOT NULL,
-      date_of_incident DATE NOT NULL,
-      date_of_form_entry TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
+  return postgres(url, { ssl: "require" });
 }
 
 export async function GET() {
+  const sql = getSql();
   try {
-    await ensureTable();
-    const sql = getDb();
+    await sql`
+      CREATE TABLE IF NOT EXISTS incidents (
+        id SERIAL PRIMARY KEY,
+        reported_by TEXT NOT NULL,
+        incident_title TEXT NOT NULL,
+        incident_detail TEXT NOT NULL,
+        urgent BOOLEAN NOT NULL,
+        status TEXT NOT NULL,
+        date_of_incident DATE NOT NULL,
+        date_of_form_entry TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
     const rows = await sql`
       SELECT id, reported_by, incident_title, incident_detail,
              urgent, status, date_of_incident::text, date_of_form_entry
@@ -38,13 +33,26 @@ export async function GET() {
     const message = err instanceof Error ? err.message : String(err);
     console.error("GET /api/incidents error:", message);
     return NextResponse.json({ error: message }, { status: 500 });
+  } finally {
+    await sql.end();
   }
 }
 
 export async function POST(req: NextRequest) {
+  const sql = getSql();
   try {
-    await ensureTable();
-    const sql = getDb();
+    await sql`
+      CREATE TABLE IF NOT EXISTS incidents (
+        id SERIAL PRIMARY KEY,
+        reported_by TEXT NOT NULL,
+        incident_title TEXT NOT NULL,
+        incident_detail TEXT NOT NULL,
+        urgent BOOLEAN NOT NULL,
+        status TEXT NOT NULL,
+        date_of_incident DATE NOT NULL,
+        date_of_form_entry TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
     const body = await req.json();
     const { reported_by, incident_title, incident_detail, urgent, status, date_of_incident } = body;
 
@@ -84,5 +92,7 @@ Please review and take action.`,
     const message = err instanceof Error ? err.message : String(err);
     console.error("POST /api/incidents error:", message);
     return NextResponse.json({ error: message }, { status: 500 });
+  } finally {
+    await sql.end();
   }
 }

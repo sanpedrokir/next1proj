@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["pg", "pg-native", "@neondatabase/serverless"],
+  serverExternalPackages: ["postgres"],
 };
 
 export default nextConfig;

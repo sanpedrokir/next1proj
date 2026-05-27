@@ -26,7 +26,7 @@ export default function Home() {
   });
 
   async function fetchIncidents() {
-    const response = await fetch("https://next1proj.up.railway.app/incidents");
+    const response = await fetch("/api/incidents");
     const data = await response.json();
     setIncidents(data || []);
   }
@@ -38,7 +38,7 @@ export default function Home() {
   async function submitIncident(e: React.FormEvent) {
     e.preventDefault();
 
-    const res = await fetch("https://next1proj.up.railway.app/incidents", {
+    const res = await fetch("/api/incidents", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export default function Home() {
         <h1 className="mb-2 text-3xl font-bold">Next1Proj Incident Tracker</h1>
 
         <p className="mb-8 text-gray-600">
-          Simple full-stack app using Next.js, TypeScript, Go and PostgreSQL.
+          Simple full-stack app using Next.js, TypeScript, and PostgreSQL.
         </p>
 
         <form
